@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 
-class EditClient extends Component {
+class EditClientModal extends Component {
     constructor() {
         super();
         this.state = {
@@ -16,7 +16,12 @@ class EditClient extends Component {
     };
 
     handleClick = () => {
-        this.props.updateClient(this.state);
+        const clientData = {
+            name: `${this.state.firstName} ${this.state.surname}`,
+            country: this.state.country,
+            _id: this.state.id
+        };
+        this.props.updateClient(clientData);
     };
 
     componentDidMount = () => {
@@ -34,9 +39,9 @@ class EditClient extends Component {
 
     render() {
         return (
-                // VALIDATIONNNNNNNNNNN
+            // VALIDATIONNNNNNNNNNN
 
-            <div className='edit-container'>
+            <div className='edit-container client-form'>
                 {/* Name row */}
                 <span>Name</span>
                 <input value={this.state.firstName} name='firstName' onChange={this.handleChange} />
@@ -53,4 +58,4 @@ class EditClient extends Component {
     };
 }
 
-export default EditClient;
+export default EditClientModal;
