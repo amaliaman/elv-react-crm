@@ -21,7 +21,7 @@ export class ClientsRow extends Component {
                 <span>{firstName}</span>
                 <span>{surname}</span>
                 <span>{country}</span>
-                <span>{moment(firstContact).format(DATE_FORMAT)}</span>
+                <span>{firstContact ? moment(firstContact).format(DATE_FORMAT) : EMPTY_CHARACTER}</span>
                 <span>{emailType ? emailType : EMPTY_CHARACTER}</span>
                 <span>{sold ? CHECK : EMPTY_CHARACTER}</span>
                 <span>{owner}</span>

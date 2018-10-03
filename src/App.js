@@ -1,10 +1,14 @@
 import React, { Component } from 'react';
 import { BrowserRouter as Router, Redirect, Route } from 'react-router-dom';
 
-import Clients from './components/clients/Clients';
 import NavBar from './components/general/NavBar';
+import Clients from './components/clients/Clients';
+import Actions from './components/actions/Actions';
+import Analytics from './components/analytics/Analytics';
+
 import apiUtils from './utils/apiUtils';
 import clientUtils from './utils/clientUtils';
+
 
 import './App.css';
 
@@ -15,18 +19,39 @@ class App extends Component {
             clients: [],
             isError: false,
             errorMessage: '',
-            closeModal: false
+            closeModal: false,
+            resetAddForm: false
         };
     };
 
     updateClient = clientData => {
-        const newClients = clientUtils.updateClient(this.state.clients, clientData)
+        const newClients = clientUtils.updateClient(this.state.clients, clientData);
         this.setState({ clients: newClients, closeModal: true });
+    };
 
+    addClient = clientData => {
+        const newClients = clientUtils.addClient(this.state.clients, clientData)
+        this.setState({ clients: newClients, resetAddForm: true });
+    };
+
+    getClientNames = () => {
+        return clientUtils.getClientNames(this.state.clients);
+    };
+
+    getClientDetails = id => {
+        return clientUtils.getClientByIdMinimal(this.state.clients, id);
     };
 
     toggleModal = () => {
         this.setState({ closeModal: !this.state.closeModal });
+    }
+
+    toggleResetAddForm = () => {
+        this.setState({ resetAddForm: !this.state.resetAddForm });
+    }
+
+    getOwners = () => {
+        return clientUtils.getOwners(this.state.clients);
     }
 
     componentDidMount = async () => {
@@ -62,6 +87,7 @@ class App extends Component {
                 <div>
                     <NavBar />
                     <Route path="/" exact render={() => <Redirect to="/clients" />} />
+
                     <Route path="/clients" exact render={() =>
                         <Clients
                             clients={this.state.clients}
@@ -70,11 +96,21 @@ class App extends Component {
                             toggleModal={this.toggleModal}
                         />
                     } />
+
                     <Route path="/actions" exact render={() =>
-                        <p>actions</p>
+                        <Actions
+                            updateClient={this.updateClient}
+                            getOwners={this.getOwners}
+                            addClient={this.addClient}
+                            resetAddForm={this.state.resetAddForm}
+                            toggleResetAddForm={this.toggleResetAddForm}
+                            clientNames={this.getClientNames()}
+                            getClientDetails={this.getClientDetails}
+                        />
                     } />
+
                     <Route path="/analytics" exact render={() =>
-                        <p>analytics</p>
+                        <Analytics />
                     } />
                 </div>
             </Router>

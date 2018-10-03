@@ -2,8 +2,8 @@ import React, { Component } from 'react';
 import Modal from 'react-responsive-modal';
 
 import ClientsRow from './ClientsRow';
-import MyLoader from '../general/MyLoader'
-import EditClient from './EditClient';
+import MyLoader from '../general/MyLoader';
+import EditClientModal from './EditClientModal';
 
 const ClientsHeader = () => {
     return (
@@ -48,14 +48,14 @@ class Clients extends Component {
 
         return (
             <MyLoader loaded={clients.length > 0}>
-                <div className='clients-container'>
+                <div className='main-container'>
                     <Modal
                         open={this.state.isEdit}
                         onClose={this.closeEditDialog}
                         classNames={{ modal: 'modal', closeIcon: 'close-icon' }}
                         center
                     >
-                        <EditClient client={this.state.currentClient} updateClient={this.props.updateClient} />
+                        <EditClientModal client={this.state.currentClient} updateClient={this.props.updateClient} />
                     </Modal>
                     <ClientsHeader />
                     {clients.map(c => <ClientsRow key={c._id} client={c} openEditDialog={this.openEditDialog} />)}
