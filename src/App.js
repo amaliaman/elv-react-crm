@@ -9,7 +9,6 @@ import Analytics from './components/analytics/Analytics';
 import apiUtils from './utils/apiUtils';
 import clientUtils from './utils/clientUtils';
 
-
 import './App.css';
 
 class App extends Component {
@@ -29,17 +28,14 @@ class App extends Component {
         this.setState({ clients: newClients, closeModal: true });
     };
 
-    addClient = clientData => {
-        const newClients = clientUtils.addClient(this.state.clients, clientData)
-        this.setState({ clients: newClients, resetAddForm: true });
-    };
-
-    getClientNames = () => {
-        return clientUtils.getClientNames(this.state.clients);
-    };
-
-    getClientDetails = id => {
-        return clientUtils.getClientByIdMinimal(this.state.clients, id);
+    /**
+     * Add a new client to API and state
+     */
+    addClient = async clientData => {
+        const url = `${apiUtils.SERVER_URL}${apiUtils.CLIENTS_API}`;
+        const newClient = await apiUtils.postApi(url, clientData);
+        console.error('TODO: save new client to state\n', newClient)
+        // save new client to state //////////////////////////////////////////
     };
 
     toggleModal = () => {
@@ -50,34 +46,44 @@ class App extends Component {
         this.setState({ resetAddForm: !this.state.resetAddForm });
     }
 
-    getOwners = () => {
-        return clientUtils.getOwners(this.state.clients);
-    }
+    /**
+     * Get a specific client by its ID
+     */
+    getClientDetails = async id => {
+        const url = `${apiUtils.SERVER_URL}${apiUtils.CLIENTS_API}/${id}`;
+        return await apiUtils.getData(url);
+    };
 
+    /**
+     * Get an array of all client names & IDs, for client selector autocomplete
+     */
+    getClientNames = async () => {
+        const url = `${apiUtils.SERVER_URL}${apiUtils.CLIENT_NAMES_API}`;
+        return await apiUtils.getData(url);
+    };
+
+    /**
+     * Get all owners from API, displayed in the 'actions' screen when choosing a client
+     */
+    getOwners = async () => {
+        const url = `${apiUtils.SERVER_URL}${apiUtils.OWNERS_API}`;
+        return await apiUtils.getData(url);
+    };
+
+    /**
+     * Get all/paged amount of clients from API
+     */
+    getClients = async () => {
+        const url = `${apiUtils.SERVER_URL}${apiUtils.CLIENTS_API}`;
+        return await apiUtils.getData(url);
+    };
+
+    // Get clients on app load
     componentDidMount = async () => {
-        try {
-            const url = `${apiUtils.SERVER_URL}${apiUtils.CLIENTS_API}`;
-            const response = await apiUtils.queryApi(url);
-
-            if (response.status === 200) {
-                this.setState({
-                    clients: response.data.filter((c, i) => i < 20)
-                });
-            }
-            else {
-                this.setState({
-                    isError: true,
-                    errorMessage: response.statusText
-                });
-            }
-        }
-        catch (error) {
-            console.error(error);
-            this.setState({
-                isError: true,
-                errorMessage: error.toString()
-            });
-        }
+        const clients = await this.getClients();
+        this.setState({
+            clients: clients.filter((c, i) => i < 20) // only 20 until paging implemented
+        });
     };
 
     render() {
@@ -104,7 +110,7 @@ class App extends Component {
                             addClient={this.addClient}
                             resetAddForm={this.state.resetAddForm}
                             toggleResetAddForm={this.toggleResetAddForm}
-                            clientNames={this.getClientNames()}
+                            getClientNames={this.getClientNames}
                             getClientDetails={this.getClientDetails}
                         />
                     } />

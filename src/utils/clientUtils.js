@@ -1,23 +1,7 @@
+// import apiUtils from './apiUtils';
+
 const getClientById = (clients, id) => {
     return clients.find(c => c._id === id);
-};
-
-const getClientByIdMinimal = (clients, id) => {
-    const client = getClientById(clients, id);
-    const { owner, emailType, sold } = client;
-    const data = { owner, emailType, sold };
-    return data;
-};
-
-const getOwners = clients => {
-    let owners = [...new Set(clients.map(c => c.owner))];
-    return owners;
-};
-
-const getClientNames = clients => {
-    const clientNames = [];
-    clients.forEach(c => clientNames.push({ name: c.name, id: c._id }));
-    return clientNames;
 };
 
 const updateClient = (stateClients, clientData) => {
@@ -57,12 +41,8 @@ const addClient = (stateClients, clientData) => {
 };
 
 const clientUtils = {
-    // Methods
     updateClient: updateClient,
     addClient: addClient,
-    getClientNames: getClientNames,
-    getClientByIdMinimal: getClientByIdMinimal,
-    getOwners: getOwners
 };
 
 export default clientUtils;

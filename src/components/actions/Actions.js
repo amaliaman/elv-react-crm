@@ -8,7 +8,7 @@ class Actions extends Component {
             <div className='main-container actions-container'>
                 <EditClientActions
                     updateClient={this.props.updateClient}
-                    clientNames={this.props.clientNames}
+                    getClientNames={this.props.getClientNames}
                     getClientDetails={this.props.getClientDetails}
                     getOwners={this.props.getOwners}
                 />

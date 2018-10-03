@@ -5,7 +5,8 @@ class ClientSelector extends Component {
     constructor() {
         super();
         this.state = {
-            selectedClient: ''
+            selectedClient: '',
+            names: []
         };
     };
 
@@ -13,12 +14,17 @@ class ClientSelector extends Component {
         this.setState({ selectedClient: e });
     };
 
-    getOptions = () => {
+    getOptions = async () => {
         const options = [];
-        this.props.clientNames.forEach(c => {
-            options.push({ value: c.id, label: c.name })
+        const names = await this.props.getClientNames();
+        names.forEach(c => {
+            options.push({ value: c._id, label: c.name })
         });
-        return options;
+        this.setState({ names: options });
+    };
+
+    componentDidMount = () => {
+        this.getOptions();
     };
 
     componentDidUpdate = (prevProps, prevState) => {
@@ -36,7 +42,7 @@ class ClientSelector extends Component {
                 <Select
                     value={this.state.selectedClient}
                     onChange={this.handleChange}
-                    options={this.getOptions()}
+                    options={this.state.names}
                     placeholder="Client Name"
                     className="client-selector"
                     isClearable

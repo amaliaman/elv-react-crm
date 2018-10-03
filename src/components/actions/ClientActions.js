@@ -6,8 +6,8 @@ class ClientActions extends Component {
         this.state = {};
     };
 
-    setStateFromClient = () => {
-        const details = this.props.getClientDetails(this.props.clientId);
+    setStateFromClient = async () => {
+        const details = await this.props.getClientDetails(this.props.clientId);
         this.setState({
             emailType: details.emailType ? details.emailType : '',
             owner: details.owner ? details.owner : '',
@@ -62,7 +62,7 @@ class ClientActions extends Component {
                     onChange={this.handleChange}
                 >
                     <option value="" disabled>Owner</option>
-                    {this.props.getOwners().map(o => <option key={o} value={o}>{o}</option>)}
+                    {this.props.owners.map(o => <option key={o} value={o}>{o}</option>)}
                 </select>
                 <button onClick={this.handleClick}>Transfer</button>
 

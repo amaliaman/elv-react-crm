@@ -21,7 +21,14 @@ class AddClient extends Component {
     };
 
     handleClick = () => {
-        this.props.addClient(this.state);
+        const { firstName, surname, country, owner } = this.state;
+        const clientData = {
+            name: `${firstName} ${surname}`,
+            country,
+            owner
+        };
+        this.props.addClient(clientData);
+        // RESET FORM
     };
 
     componentDidUpdate = (prevProps) => {
