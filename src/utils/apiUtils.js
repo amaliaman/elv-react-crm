@@ -1,14 +1,13 @@
 import axios from 'axios';
 
-const postApi = async (url, body) => { // convert to async/await
-    console.log(url, body)
-    axios.post(url, body)
-        .then(function (response) {
-            console.log(response);
-        })
-        .catch(function (error) {
-            console.log(error);
-        });
+const postApi = async (url, body) => {
+    try {
+        const response = await axios.post(url, body);
+        return response;
+    }
+    catch (error) {
+        console.log(error);/////////////////// handle errors
+    }
 };
 
 const queryApi = async url => {
