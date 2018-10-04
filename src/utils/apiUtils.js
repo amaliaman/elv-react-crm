@@ -62,6 +62,7 @@ const apiUtils = {
     ANALYTICS_OUTSTANDING_COUNT: '/outstanding',
     ANALYTICS_COUNTRY_COUNT: '/country',
     CHARTS_TOP_EMPLOYEES: '/topemployees',
+    CHARTS_SALES_BY_COUNTRY: '/salescountry',
     // Methods
     queryApi: queryApi,
     getData: getData,

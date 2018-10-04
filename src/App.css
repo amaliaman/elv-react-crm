@@ -259,7 +259,13 @@ nav a:first-child {
     text-transform: none;
 }
 
+.charts-container {
+    display: grid;
+    grid-gap: 1rem;
+    grid-template-columns: 1fr 2fr;
+    grid-template-rows: repeat(2, 280px);
+    /* grid-template-areas: "c1 c2" "c3 c4"; */
+}
 .chart-container {
     height: 200px;
-    max-width: 500px;
 }

@@ -88,12 +88,8 @@ router.get('/analytics/outstanding', (req, res) => {
 // Hottest country
 router.get('/analytics/country', (req, res) => {
     Client.aggregate([
-        {
-            $match: { sold: { '$eq': true } }
-        },
-        {
-            $group: { _id: "$country", count: { $sum: 1 } }
-        }
+        { $match: { sold: { '$eq': true } } },
+        { $group: { _id: "$country", count: { $sum: 1 } } }
     ])
         .then(data => {
             const max = data.sort((a, b) => a.count < b.count)[0]._id;
@@ -106,18 +102,14 @@ router.get('/analytics/country', (req, res) => {
 // Top employees
 router.get('/analytics/topemployees', (req, res) => {
     Client.aggregate([
-        {
-            $match: { sold: { '$eq': true } }
-        },
-        {
-            $group: { _id: "$owner", sold: { $sum: 1 } }
-        }
+        { $match: { sold: { '$eq': true } } },
+        { $group: { _id: "$owner", sold: { $sum: 1 } } }
     ])
         .then(data => {
-            const top = data
+            data
                 .sort((a, b) => a.sold < b.sold)
                 .slice(0, 3);
-            res.json(top);
+            res.json(data);
         })
         .catch(err => { throw err });
 });
@@ -125,12 +117,8 @@ router.get('/analytics/topemployees', (req, res) => {
 // Sales by country
 router.get('/analytics/salescountry', (req, res) => {
     Client.aggregate([
-        {
-            $match: { sold: { '$eq': true } }
-        },
-        {
-            $group: { _id: "$country", sold: { $sum: 1 } }
-        }
+        { $match: { sold: { '$eq': true } } },
+        { $group: { _id: "$country", sold: { $sum: 1 } } }
     ])
         .then(data => {
             data.sort((a, b) => a._id > b._id);
@@ -138,4 +126,26 @@ router.get('/analytics/salescountry', (req, res) => {
         })
         .catch(err => { throw err });
 });
+
+// Sales last 30 days
+router.get('/analytics/lastmonth', (req, res) => {
+    const lastMonth = moment().subtract(30, 'days');
+    Client.aggregate([
+        { $match: { firstContact: { $gte: new Date(lastMonth), $lte: new Date() } } },
+        {
+            $project:
+            {
+                firstContact: 1,
+                sale: { $cond: { if: { $eq: ["$sold", true] }, then: 1, else: 0 } }
+            }
+        },
+        { $group: { _id: "$firstContact", sales: { $sum: '$sale' } } }
+    ])
+        .then(data => {
+            data.sort((a, b) => a._id > b._id);
+            res.json(data)
+        })
+        .catch(err => { throw err });
+});
+
 module.exports = router;
