@@ -102,6 +102,40 @@ router.get('/analytics/country', (req, res) => {
         .catch(err => { throw err });
 });
 
+// ===== Charts queries =====
+// Top employees
+router.get('/analytics/topemployees', (req, res) => {
+    Client.aggregate([
+        {
+            $match: { sold: { '$eq': true } }
+        },
+        {
+            $group: { _id: "$owner", sold: { $sum: 1 } }
+        }
+    ])
+        .then(data => {
+            const top = data
+                .sort((a, b) => a.sold < b.sold)
+                .slice(0, 3);
+            res.json(top);
+        })
+        .catch(err => { throw err });
+});
 
-
+// Sales by country
+router.get('/analytics/salescountry', (req, res) => {
+    Client.aggregate([
+        {
+            $match: { sold: { '$eq': true } }
+        },
+        {
+            $group: { _id: "$country", sold: { $sum: 1 } }
+        }
+    ])
+        .then(data => {
+            data.sort((a, b) => a._id > b._id);
+            res.json(data);
+        })
+        .catch(err => { throw err });
+});
 module.exports = router;

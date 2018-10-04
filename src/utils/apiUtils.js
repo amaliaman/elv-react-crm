@@ -61,6 +61,7 @@ const apiUtils = {
     ANALYTICS_EMAILS_COUNT: '/emails',
     ANALYTICS_OUTSTANDING_COUNT: '/outstanding',
     ANALYTICS_COUNTRY_COUNT: '/country',
+    CHARTS_TOP_EMPLOYEES: '/topemployees',
     // Methods
     queryApi: queryApi,
     getData: getData,
