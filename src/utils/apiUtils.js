@@ -1,5 +1,15 @@
 import axios from 'axios';
 
+const putApi = async (url, body) => {
+    try {
+        const response = await axios.put(url, body);
+        return response;
+    }
+    catch (error) {
+        console.log(error);/////////////////// handle errors
+    }
+};
+
 const postApi = async (url, body) => {
     try {
         const response = await axios.post(url, body);
@@ -19,6 +29,7 @@ const queryApi = async url => {
             result.data = response.data;
         }
         else {
+            console.error(response.statusText);
             result.isSuccess = false;
             result.error = response.statusText;
         }
@@ -39,7 +50,6 @@ const getData = async url => {
     return null;
 }
 
-
 const apiUtils = {
     // Constants
     SERVER_URL: 'http://localhost:8080',
@@ -49,7 +59,8 @@ const apiUtils = {
     // Methods
     queryApi: queryApi,
     getData: getData,
-    postApi: postApi
+    postApi: postApi,
+    putApi: putApi
 };
 
 export default apiUtils;

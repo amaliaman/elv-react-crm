@@ -21,7 +21,6 @@ router.get('/owners', (req, res) => {
 router.get('/clientnames', (req, res) => {
     Client.find()
         .select('name')
-        // .then(clientNames => console.log(clientNames))
         .then(clientNames => res.json(clientNames))
         .catch(err => { throw err });
 });
@@ -35,6 +34,7 @@ router.get('/clients/:id', (req, res) => {
         .catch(err => { throw err });
 });
 
+// Add a client
 router.post('/clients', (req, res) => {
     const { name, country, owner } = req.body;
     console.log(name)
@@ -44,6 +44,15 @@ router.post('/clients', (req, res) => {
         owner: owner
     });
     client.save()
+        .then(client => res.status(201).json(client))
+        .catch(err => { throw err });
+});
+
+// Update a client
+router.put('/clients/:id', (req, res) => {
+    const { id } = req.params;
+    const update = req.body;
+    Client.findByIdAndUpdate(id, update, { new: true })
         .then(client => res.status(201).json(client))
         .catch(err => { throw err });
 });

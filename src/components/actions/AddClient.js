@@ -22,8 +22,9 @@ class AddClient extends Component {
 
     handleClick = () => {
         const { firstName, surname, country, owner } = this.state;
+        const name = firstName && surname ? `${firstName} ${surname}` : null;
         const clientData = {
-            name: `${firstName} ${surname}`,
+            name,
             country,
             owner
         };
