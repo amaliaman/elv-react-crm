@@ -97,6 +97,12 @@ nav a:first-child {
     margin: var(--main-margin);
 }
 
+.mini-loader-container {
+    padding: 0;
+    margin: auto;
+    display: inline;
+}
+
 /* Edit modal */
 
 .modal {
