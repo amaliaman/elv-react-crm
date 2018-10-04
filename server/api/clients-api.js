@@ -1,8 +1,10 @@
 const express = require('express');
 const router = express.Router();
+const moment = require('moment');
 
 const Client = require('../../models/clientModel');
 
+// ===== Main CRUD =====
 // Get all clients
 router.get('/clients', (req, res) => {
     Client.find()
@@ -56,5 +58,50 @@ router.put('/clients/:id', (req, res) => {
         .then(client => res.status(201).json(client))
         .catch(err => { throw err });
 });
+
+// ===== Badges queries =====
+// New clients this month
+router.get('/analytics/new', (req, res) => {
+    const year = moment().year();
+    const month = moment().month();
+    const firstDay = new Date(year, month, 1);
+    const lastDay = new Date(year, month + 1, 0);
+    Client.countDocuments({ "firstContact": { "$gte": firstDay, "$lte": lastDay } })
+        .then(count => res.json(count))
+        .catch(err => { throw err });
+});
+
+// Emails sent
+router.get('/analytics/emails', (req, res) => {
+    Client.countDocuments({ 'emailType': { '$exists': true, '$ne': null } })
+        .then(count => res.json(count))
+        .catch(err => { throw err });
+});
+
+// Outstanding clients
+router.get('/analytics/outstanding', (req, res) => {
+    Client.countDocuments({ 'sold': { '$exists': true, '$eq': false } })
+        .then(count => res.json(count))
+        .catch(err => { throw err });
+});
+
+// Hottest country
+router.get('/analytics/country', (req, res) => {
+    Client.aggregate([
+        {
+            $match: { sold: { '$eq': true } }
+        },
+        {
+            $group: { _id: "$country", count: { $sum: 1 } }
+        }
+    ])
+        .then(data => {
+            const max = data.sort((a, b) => a.count < b.count)[0]._id;
+            res.send(max);
+        })
+        .catch(err => { throw err });
+});
+
+
 
 module.exports = router;

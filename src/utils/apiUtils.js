@@ -56,6 +56,11 @@ const apiUtils = {
     CLIENTS_API: '/clients',
     OWNERS_API: '/owners',
     CLIENT_NAMES_API: '/clientnames',
+    ANALYTICS_BASE:'/analytics',
+    ANALYTICS_NEW_COUNT: '/new',
+    ANALYTICS_EMAILS_COUNT: '/emails',
+    ANALYTICS_OUTSTANDING_COUNT: '/outstanding',
+    ANALYTICS_COUNTRY_COUNT: '/country',
     // Methods
     queryApi: queryApi,
     getData: getData,
