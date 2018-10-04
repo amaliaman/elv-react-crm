@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChartLine, faEnvelope, faUserCircle, faGlobeAmericas } from '@fortawesome/free-solid-svg-icons';
 import moment from 'moment';
+import axios from 'axios';
 
 import MiniLoader from '../general/MiniLoader';
 import apiUtils from '../../utils/apiUtils';
@@ -37,14 +38,7 @@ class Badges extends Component {
         this.setState({ [property]: value, [property + 'Loaded']: true });
     };
 
-    componentDidMount = async () => {
-        this.queryBadgeValue('emailCount', apiUtils.ANALYTICS_EMAILS_COUNT);
-        this.queryBadgeValue('outstandingCount', apiUtils.ANALYTICS_OUTSTANDING_COUNT);
-        this.queryBadgeValue('newCount', apiUtils.ANALYTICS_NEW_COUNT);
-        this.queryBadgeValue('countryCount', apiUtils.ANALYTICS_COUNTRY_COUNT);
-    };
-
-    render() {
+    getBadges = () => {
         const chart = <FontAwesomeIcon icon={faChartLine} />;
         const envelope = <FontAwesomeIcon icon={faEnvelope} />;
         const user = <FontAwesomeIcon icon={faUserCircle} />;
@@ -53,15 +47,66 @@ class Badges extends Component {
         const month = moment().month();
         const monthName = moment().month(month).format('MMMM');
 
+        const badges = [
+            {
+                label: `New ${monthName} Clients`,
+                color: '#2ecc71',
+                value: this.state.newCount,
+                icon: chart,
+                loaded: this.state.newCountLoaded
+            },
+            {
+                label: 'Emails Sent',
+                color: '#3498db',
+                value: this.state.emailCount,
+                icon: envelope,
+                loaded: this.state.emailCountLoaded
+            },
+            {
+                label: 'Outstanding Clients',
+                color: '#e74c3c',
+                value: this.state.outstandingCount,
+                icon: user,
+                loaded: this.state.outstandingCountLoaded
+            },
+            {
+                label: 'Hottest Country',
+                color: '#f1c40f',
+                value: this.state.countryCount,
+                icon: globe,
+                loaded: this.state.countryCountLoaded
+            }
+        ];
+        return badges;
+    };
+
+    /**
+     * Query API for badge values concurrently
+     */
+    componentDidMount = () => {
+        axios.all([
+            this.queryBadgeValue('emailCount', apiUtils.ANALYTICS_EMAILS_COUNT),
+            this.queryBadgeValue('outstandingCount', apiUtils.ANALYTICS_OUTSTANDING_COUNT),
+            this.queryBadgeValue('newCount', apiUtils.ANALYTICS_NEW_COUNT),
+            this.queryBadgeValue('countryCount', apiUtils.ANALYTICS_COUNTRY_COUNT)
+        ]);
+    };
+
+    render() {
         return (
             <div className="badges-container main-container">
-                <Badge color="#2ecc71" value={this.state.newCount} label={'New ' + monthName + ' Clients'} icon={chart} loaded={this.state.newCountLoaded} />
-                <Badge color="#3498db" value={this.state.emailCount} label='Emails Sent' icon={envelope} loaded={this.state.emailCountLoaded} />
-                <Badge color="#e74c3c" value={this.state.outstandingCount} label='Outstanding Clients' icon={user} loaded={this.state.outstandingCountLoaded} />
-                <Badge color="#f1c40f" value={this.state.countryCount} label='Hottest Country' icon={globe} loaded={this.state.countryCountLoaded} />
+                {this.getBadges().map(b =>
+                    <Badge
+                        key={b.label}
+                        color={b.color}
+                        value={b.value}
+                        label={b.label}
+                        icon={b.icon}
+                        loaded={b.loaded}
+                    />)}
             </div>
-        )
+        );
     }
 }
 
-export default Badges
+export default Badges;
