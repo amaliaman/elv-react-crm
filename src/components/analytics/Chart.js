@@ -1,7 +1,10 @@
 import React, { Component } from 'react'
-import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Legend } from 'recharts';
 import apiUtils from '../../utils/apiUtils';
 import MyLoader from '../general/MyLoader';
+
+import CrmBarChart from './charts/CrmBarChart';
+import CrmPieChart from './charts/CrmPieChart';
+import CrmLineChart from './charts/CrmLineChart';
 
 export class Chart extends Component {
     constructor() {
@@ -18,34 +21,53 @@ export class Chart extends Component {
         this.setState({ data: data, loaded: true });
     };
 
+    /**
+     * Generate different charts according to chartType prop
+     */
+    getChart = () => {
+        let chart = null;
+        switch (this.props.chartType) {
+            case 'bar':
+                chart = (<CrmBarChart
+                    data={this.state.data}
+                    layout={this.props.layout}
+                    xLabel={this.props.xLabel}
+                    barDataKey={this.props.barDataKey}
+                    color={this.props.color}
+                    barSize={this.props.barSize}
+                    axisDataKey={this.props.axisDataKey}
+                />);
+                break;
+            case 'line':
+                chart = (<CrmLineChart
+                    data={this.state.data}
+                    layout={this.props.layout}
+                    xLabel={this.props.xLabel}
+                    lineDataKey={this.props.lineDataKey}
+                    color={this.props.color}
+                    axisDataKey={this.props.axisDataKey}
+                />);
+                break;
+            case 'pie':
+                chart = (<CrmPieChart
+                    data={this.state.data}
+                    pieDataKey={this.props.pieDataKey}
+                    pieNameKey={this.props.pieNameKey}
+                    colors={this.props.colors}
+                />);
+                break;
+            default:
+                console.error('Invalid chartType prop');
+        }
+        return chart;
+    };
+
     render() {
-        const { layout } = this.props;
-        const xLabel = { value: this.props.xLabel, offset: 0, position: 'bottom' };
-        
         return (
             <MyLoader loaded={this.state.loaded}>
                 <div className="chart-container">
                     <h4>{this.props.title}</h4>
-                    <ResponsiveContainer width="100%" height="100%">
-                        <BarChart data={this.state.data} layout={layout}>
-                            {layout === 'horizontal' ?
-                                <XAxis type="category" dataKey="_id" label={xLabel} /> :
-                                <XAxis type="number" label={xLabel} />
-                            }
-                            {layout === 'horizontal' ?
-                                <YAxis type="number" /> :
-                                <YAxis type="category" dataKey="_id" />
-                            }
-                            <Tooltip />
-                            <Legend />
-                            <Bar
-                                dataKey={this.props.barDataKey}
-                                fill={this.props.color}
-                                barSize={this.props.barSize}
-                                legendType='none'
-                            />
-                        </BarChart>
-                    </ResponsiveContainer>
+                    {this.getChart()}
                 </div>
             </MyLoader>
         );

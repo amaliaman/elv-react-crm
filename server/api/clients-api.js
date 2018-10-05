@@ -106,10 +106,10 @@ router.get('/analytics/topemployees', (req, res) => {
         { $group: { _id: "$owner", sold: { $sum: 1 } } }
     ])
         .then(data => {
-            data
+            const top = data
                 .sort((a, b) => a.sold < b.sold)
                 .slice(0, 3);
-            res.json(data);
+            res.json(top);
         })
         .catch(err => { throw err });
 });
@@ -127,25 +127,40 @@ router.get('/analytics/salescountry', (req, res) => {
         .catch(err => { throw err });
 });
 
-// Sales last 30 days
-router.get('/analytics/lastmonth', (req, res) => {
-    const lastMonth = moment().subtract(30, 'days');
+// Sales since given date (count of sales per firstContact - doesn't reflect actual sales )
+router.get('/analytics/since/:date', (req, res) => {
+    const { date } = req.params;
+    const since = new Date(date);
+    const now = new Date();
+
     Client.aggregate([
-        { $match: { firstContact: { $gte: new Date(lastMonth), $lte: new Date() } } },
-        {
-            $project:
-            {
-                firstContact: 1,
-                sale: { $cond: { if: { $eq: ["$sold", true] }, then: 1, else: 0 } }
-            }
-        },
-        { $group: { _id: "$firstContact", sales: { $sum: '$sale' } } }
+        { $match: { firstContact: { $gte: since, $lte: now }, sold: { '$eq': true } } },
+        // {
+        //     $project:
+        //     {
+        //         dates: moment('$firstContact').format(),
+        //         firstContact: 1,
+        //         // sale: { $cond: { if: { $eq: ["$sold", true] }, then: 1, else: 0 } }
+        //     }
+        // },
+        { $group: { _id: '$firstContact', sales: { $sum: 1 } } }
+        // { $group: { _id: "$firstContact", sales: { $sum: '$sale' } } }
     ])
         .then(data => {
             data.sort((a, b) => a._id > b._id);
             res.json(data)
         })
         .catch(err => { throw err });
+});
+
+// Client acquisition by month
+router.get('/analytics/acquisition', (req, res) => {
+    const acquisitionData = [
+        { month: '6-12 Months', clients: 131 },
+        { month: '> 12 Months', clients: 302 },
+        { month: 'Last Month', clients: 22 }
+    ];
+    res.json(acquisitionData);
 });
 
 module.exports = router;
