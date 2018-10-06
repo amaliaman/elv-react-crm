@@ -88,12 +88,8 @@ router.get('/analytics/outstanding', (req, res) => {
 // Hottest country
 router.get('/analytics/country', (req, res) => {
     Client.aggregate([
-        {
-            $match: { sold: { '$eq': true } }
-        },
-        {
-            $group: { _id: "$country", count: { $sum: 1 } }
-        }
+        { $match: { sold: { '$eq': true } } },
+        { $group: { _id: "$country", count: { $sum: 1 } } }
     ])
         .then(data => {
             const max = data.sort((a, b) => a.count < b.count)[0]._id;
@@ -102,6 +98,63 @@ router.get('/analytics/country', (req, res) => {
         .catch(err => { throw err });
 });
 
+// ===== Charts queries =====
+// Top employees
+router.get('/analytics/topemployees', (req, res) => {
+    Client.aggregate([
+        { $match: { sold: { '$eq': true } } },
+        { $group: { _id: "$owner", sold: { $sum: 1 } } }
+    ])
+        .then(data => {
+            const top = data
+                .sort((a, b) => a.sold < b.sold)
+                .slice(0, 3);
+            res.json(top);
+        })
+        .catch(err => { throw err });
+});
 
+// Sales by country
+router.get('/analytics/salescountry', (req, res) => {
+    Client.aggregate([
+        { $match: { sold: { '$eq': true } } },
+        { $group: { _id: "$country", sold: { $sum: 1 } } }
+    ])
+        .then(data => {
+            data.sort((a, b) => a._id > b._id);
+            res.json(data);
+        })
+        .catch(err => { throw err });
+});
+
+// Sales since given date (count of sales per firstContact - doesn't reflect actual sales )
+router.get('/analytics/since/:date', (req, res) => {
+    const { date } = req.params;
+    const since = new Date(date);
+    const now = new Date();
+
+    Client.aggregate([
+        { $match: { firstContact: { $gte: since, $lte: now }, sold: { '$eq': true } } },
+        { $group: { _id: '$firstContact', sales: { $sum: 1 } } }
+    ])
+        .then(data => {
+            data
+                .sort((a, b) => a._id - b._id)
+                .forEach(d => d._id = moment(d._id).format('YYYY-MM-DD'));
+            res.json(data)
+        })
+        .catch(err => { throw err });
+});
+
+// Client acquisition by month
+router.get('/analytics/acquisition', (req, res) => {
+    // Hard-coded values for demo
+    const acquisitionData = [
+        { month: '6-12 Months', clients: 131 },
+        { month: '> 12 Months', clients: 302 },
+        { month: 'Last Month', clients: 22 }
+    ];
+    res.json(acquisitionData);
+});
 
 module.exports = router;
