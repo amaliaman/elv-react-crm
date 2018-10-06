@@ -1,9 +1,9 @@
-import React, { Component } from 'react'
+import React, { Component } from 'react';
 import { ResponsiveContainer, XAxis, YAxis, Tooltip, Legend, BarChart, Bar } from 'recharts';
 
 class CrmBarChart extends Component {
     render() {
-        const xLabel = { value: this.props.xLabel, offset: 0, position: 'bottom' };
+        const xLabel = { value: this.props.xLabel, offset: 0, position: 'center' };
 
         return (
             <ResponsiveContainer width="100%" height="100%">
@@ -11,11 +11,11 @@ class CrmBarChart extends Component {
                     <Tooltip />
                     <Legend />
                     {this.props.layout === 'horizontal' ?
-                        <XAxis type="category" dataKey={this.props.axisDataKey} label={xLabel} /> :
-                        <XAxis type="number" label={xLabel} />}
+                        <XAxis type="category" height={60} dataKey={this.props.axisDataKey} /> :
+                        <XAxis type="number" height={60} label={xLabel} />}
                     {this.props.layout === 'horizontal' ?
                         <YAxis type="number" /> :
-                        <YAxis type="category" dataKey={this.props.axisDataKey} />}
+                        <YAxis type="category" dataKey={this.props.axisDataKey} width={80} />}
                     <Bar
                         dataKey={this.props.barDataKey}
                         fill={this.props.color}

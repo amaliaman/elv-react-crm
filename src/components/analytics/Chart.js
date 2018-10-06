@@ -46,6 +46,7 @@ export class Chart extends Component {
                     lineDataKey={this.props.lineDataKey}
                     color={this.props.color}
                     axisDataKey={this.props.axisDataKey}
+                    since={this.props.since}
                 />);
                 break;
             case 'pie':
@@ -64,11 +65,9 @@ export class Chart extends Component {
 
     render() {
         return (
-            <MyLoader loaded={this.state.loaded}>
-                <div className="chart-container">
-                    <h4>{this.props.title}</h4>
-                    {this.getChart()}
-                </div>
+            <MyLoader loaded={this.state.loaded} wrapperClass="chart-item">
+                <p>{this.props.title}</p>
+                {this.getChart()}
             </MyLoader>
         );
     }

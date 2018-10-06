@@ -4,7 +4,7 @@ import Loader from 'react-loader-spinner';
 export class MyLoader extends Component {
     render() {
         return (
-            <div>
+            <div className={this.props.wrapperClass}>
                 {this.props.loaded ?
                     <div>{this.props.children}</div>
                     :

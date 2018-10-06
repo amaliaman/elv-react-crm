@@ -135,19 +135,12 @@ router.get('/analytics/since/:date', (req, res) => {
 
     Client.aggregate([
         { $match: { firstContact: { $gte: since, $lte: now }, sold: { '$eq': true } } },
-        // {
-        //     $project:
-        //     {
-        //         dates: moment('$firstContact').format(),
-        //         firstContact: 1,
-        //         // sale: { $cond: { if: { $eq: ["$sold", true] }, then: 1, else: 0 } }
-        //     }
-        // },
         { $group: { _id: '$firstContact', sales: { $sum: 1 } } }
-        // { $group: { _id: "$firstContact", sales: { $sum: '$sale' } } }
     ])
         .then(data => {
-            data.sort((a, b) => a._id > b._id);
+            data
+                .sort((a, b) => a._id - b._id)
+                .forEach(d => d._id = moment(d._id).format('YYYY-MM-DD'));
             res.json(data)
         })
         .catch(err => { throw err });
@@ -155,6 +148,7 @@ router.get('/analytics/since/:date', (req, res) => {
 
 // Client acquisition by month
 router.get('/analytics/acquisition', (req, res) => {
+    // Hard-coded values for demo
     const acquisitionData = [
         { month: '6-12 Months', clients: 131 },
         { month: '> 12 Months', clients: 302 },

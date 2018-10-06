@@ -34,13 +34,10 @@ class App extends Component {
     * update newly updated client in state (from API)
     */
     updateClientInState = clientData => {
-        const clients = [];
-        this.state.clients.forEach(c => {
-            clients.push({ ...c })
-        });
+        const clients = JSON.parse(JSON.stringify(this.state.clients));
         let client = clients.find(c => c._id === clientData._id);
         Object.keys(clientData).forEach(k => client[k] = clientData[k]);
-        this.setState({ clients: clients });
+        this.setState({ clients: clients }, alert(`${clientData.name} was updated successfully`));
     };
 
     /**
@@ -62,12 +59,9 @@ class App extends Component {
      * Add newly created client to state (from API)
      */
     addClientToState = client => {
-        const clients = [];
-        this.state.clients.forEach(c => {
-            clients.push({ ...c })
-        });
-        clients.unshift(client);///push?
-        this.setState({ clients: clients });
+        const clients = JSON.parse(JSON.stringify(this.state.clients));
+        clients.push(client);
+        this.setState({ clients: clients }, alert(`${client.name} was added successfully`));
     };
 
     /**
