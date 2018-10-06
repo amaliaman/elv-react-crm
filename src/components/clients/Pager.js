@@ -36,7 +36,7 @@ class Pager extends Component {
             <div className='pager-container'>
                 <button onClick={this.props.pageToStart} disabled={firstResult <= 0}>&lt;&lt;</button>
                 <button onClick={this.props.pageBackwards} disabled={firstResult <= 0}>&lt;</button>
-                <span>{firstResult + 1}-{lastResult + 1} {/* / {totalItems} */}</span>
+                <span>{firstResult + 1}-{lastResult + 1}</span>
                 <button onClick={this.props.pageForward} disabled={lastResult + 1 >= totalItems}>&gt;</button>
                 <button onClick={this.props.pageToEnd} disabled={lastResult + 1 >= totalItems}>&gt;&gt;</button>
             </div>

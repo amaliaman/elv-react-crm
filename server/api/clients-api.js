@@ -16,7 +16,7 @@ router.get('/clients', (req, res) => {
 // Get paged clients
 router.get('/clientspaged/:start', (req, res) => {
     const { start } = req.params;
-    const pageSize = 21;
+    const pageSize = 20;
 
     Client
         .countDocuments()
