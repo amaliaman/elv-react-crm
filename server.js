@@ -40,13 +40,13 @@ app.listen(SERVER_PORT, () => { console.log(`${getTimestamp()} - Server started 
 function getTimestamp() { return moment().format("YYYY-MM-DD HH:mm:ss") };
 
 // ===== Uncomment only to initialize the DB from data.json =====
-/* const initDB = () => {
-  Client.deleteMany({}, () => {
-    const data = require('./server/data.json');
-    data.forEach(c => {
-      const client = new Client(c);
-      client.save();
-    });
-  });
-};
-initDB(); */
+// const initDB = () => {
+//   Client.deleteMany({}, () => {
+//     const data = require('./server/data.json');
+//     data.forEach(c => {
+//       const client = new Client(c);
+//       client.save();
+//     });
+//   });
+// };
+// initDB();

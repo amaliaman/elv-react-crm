@@ -15,10 +15,24 @@ export class Chart extends Component {
         };
     };
 
-    componentDidMount = async () => {
+    handleChange = e => {
+        this.props.setSalesBy(e.target.value);
+    };
+
+    getData = async () => {
         const url = `${apiUtils.SERVER_URL}${apiUtils.ANALYTICS_BASE}${this.props.url}`;
         const data = await apiUtils.getData(url);
         this.setState({ data: data, loaded: true });
+    };
+
+    componentDidMount = () => {
+        this.getData();
+    };
+
+    componentDidUpdate = prevProps => {
+        if (prevProps.url !== this.props.url) {
+            this.getData();
+        }
     };
 
     /**
@@ -64,9 +78,18 @@ export class Chart extends Component {
     };
 
     render() {
+        const salesBySelect = (
+            <select value={this.props.salesBy} onChange={this.handleChange}>
+                <option value='country'>Country</option>
+                <option value='emailType'>Email</option>
+                <option value='owner'>Owner</option>
+                <option value='firstContact'>Month (all time)</option>
+            </select>
+        );
+
         return (
             <MyLoader loaded={this.state.loaded} wrapperClass="chart-item">
-                <p>{this.props.title}</p>
+                <p>{this.props.title} {this.props.id === 'salesBy' && salesBySelect}</p>
                 {this.getChart()}
             </MyLoader>
         );

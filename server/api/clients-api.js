@@ -16,7 +16,7 @@ router.get('/clients', (req, res) => {
 // Get paged clients
 router.get('/clientspaged/:start', (req, res) => {
     const { start } = req.params;
-    const pageSize = 21;
+    const pageSize = 20;
 
     Client
         .countDocuments()
@@ -51,6 +51,7 @@ router.get('/owners', (req, res) => {
 router.get('/clientnames', (req, res) => {
     Client
         .find()
+        .limit(50) // for demo
         .select('name')
         .then(clientNames => res.json(clientNames))
         .catch(err => { throw err });
@@ -151,18 +152,38 @@ router.get('/analytics/topemployees', (req, res) => {
         .catch(err => { throw err });
 });
 
-// Sales by country
-router.get('/analytics/salescountry', (req, res) => {
-    Client
-        .aggregate([
-            { $match: { sold: { '$eq': true } } },
-            { $group: { _id: "$country", sold: { $sum: 1 } } }
-        ])
-        .then(data => {
-            data.sort((a, b) => a._id > b._id);
-            res.json(data);
-        })
-        .catch(err => { throw err });
+// Sales by dynamic param
+router.get('/analytics/sales/:by', (req, res) => {
+    const { by } = req.params;
+    let selectBy = `$${by}`;
+
+    if (by !== 'firstContact') {
+        Client
+            .aggregate([
+                { $match: { sold: { '$eq': true } } },
+                { $group: { _id: selectBy, sold: { $sum: 1 } } }
+            ])
+            .then(data => {
+                data.sort((a, b) => a._id > b._id);
+                res.json(data);
+            })
+            .catch(err => { throw err });
+    }
+    else {
+        Client
+            .aggregate([
+                { $match: { sold: { '$eq': true } } },
+                { $project: { month: { $month: selectBy }, } },
+                { $group: { _id: { month: '$month' }, sold: { $sum: 1 } } }
+            ])
+            .then(data => {
+                const months = data
+                    .sort((a, b) => a._id.month - b._id.month)
+                    .map(m => { return { _id: moment(m._id.month, 'M').format('MMM'), sold: m.sold } })
+                res.json(months);
+            })
+            .catch(err => { throw err });
+    }
 });
 
 // Sales since given date (count of sales per firstContact - doesn't reflect actual sales )
