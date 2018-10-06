@@ -53,7 +53,8 @@ const getData = async url => {
 const apiUtils = {
     // Constants
     SERVER_URL: 'http://localhost:8080',
-    CLIENTS_API: '/clientspaged',
+    CLIENTS_PAGED_API: '/clientspaged',
+    CLIENTS_API: '/clients',
     OWNERS_API: '/owners',
     CLIENT_NAMES_API: '/clientnames',
     ANALYTICS_BASE: '/analytics',
@@ -62,7 +63,7 @@ const apiUtils = {
     ANALYTICS_OUTSTANDING_COUNT: '/outstanding',
     ANALYTICS_COUNTRY_COUNT: '/country',
     CHARTS_TOP_EMPLOYEES: '/topemployees',
-    CHARTS_SALES_BY_COUNTRY: '/salescountry',
+    CHARTS_SALES_BY: '/sales/',
     CHARTS_SINCE_DATE: '/since/',
     CHARTS_ACQUISITION: '/acquisition',
     // Methods

@@ -115,7 +115,7 @@ class App extends Component {
      * Get all/paged amount of clients from API
      */
     getClients = async index => {
-        const url = `${apiUtils.SERVER_URL}${apiUtils.CLIENTS_API}/${index}`;
+        const url = `${apiUtils.SERVER_URL}${apiUtils.CLIENTS_PAGED_API}/${index}`;
         return await apiUtils.getData(url);
     };
 
