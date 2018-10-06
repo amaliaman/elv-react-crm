@@ -4,6 +4,7 @@ import Modal from 'react-responsive-modal';
 import ClientsRow from './ClientsRow';
 import MyLoader from '../general/MyLoader';
 import EditClientModal from './EditClientModal';
+import Search from './Search';
 
 const ClientsHeader = () => {
     return (
@@ -24,8 +25,14 @@ class Clients extends Component {
         super();
         this.state = {
             isEdit: false,
-            currentClient: null
+            currentClient: null,
+            searchTerm: '',
+            selectFilter: ''
         }
+    };
+
+    setSearchTerm = (term, filter) => {
+        this.setState({ searchTerm: term, selectFilter: filter });
     };
 
     closeEditDialog = () => {
@@ -36,6 +43,25 @@ class Clients extends Component {
         this.setState({ isEdit: true, currentClient: client });
     };
 
+    getFilteredList = () => {
+        const { clients } = this.props;
+        const { searchTerm, selectFilter } = this.state;
+        const list = searchTerm ?
+            clients.filter(c => {
+                if (selectFilter !== 'sold') {
+                    return c[selectFilter] && c[selectFilter].toLowerCase().includes(searchTerm.toLowerCase());
+                }
+                else {
+                    let isSold;
+                    if (searchTerm === 'y') { isSold = true }
+                    else if (searchTerm === 'n') { isSold = false }
+                    return c[selectFilter] === isSold;
+                }
+            }) :
+            clients;
+        return list;
+    };
+
     componentDidUpdate = () => {
         if (this.props.closeModal) {
             this.closeEditDialog();
@@ -44,10 +70,10 @@ class Clients extends Component {
     };
 
     render() {
-        const { clients } = this.props;
+        let clientsList = this.getFilteredList();
 
         return (
-            <MyLoader loaded={clients.length > 0}>
+            <MyLoader loaded={clientsList.length > 0 || this.state.searchTerm}>
                 <div className='main-container'>
                     <Modal
                         open={this.state.isEdit}
@@ -57,8 +83,13 @@ class Clients extends Component {
                     >
                         <EditClientModal client={this.state.currentClient} updateClient={this.props.updateClient} />
                     </Modal>
+                    <Search
+                        searchTerm={this.state.searchTerm}
+                        selectFilter={this.state.selectFilter}
+                        setSearchTerm={this.setSearchTerm}
+                    />
                     <ClientsHeader />
-                    {clients.map(c => <ClientsRow key={c._id} client={c} openEditDialog={this.openEditDialog} />)}
+                    {clientsList.map(c => <ClientsRow key={c._id} client={c} openEditDialog={this.openEditDialog} />)}
                 </div>
             </MyLoader>
         )

@@ -10,6 +10,10 @@ import apiUtils from './utils/apiUtils';
 
 import './App.css';
 
+const deepCopyArray = array => {
+    return JSON.parse(JSON.stringify(array));
+}
+
 class App extends Component {
     constructor() {
         super();
@@ -34,7 +38,7 @@ class App extends Component {
     * update newly updated client in state (from API)
     */
     updateClientInState = clientData => {
-        const clients = JSON.parse(JSON.stringify(this.state.clients));
+        const clients = deepCopyArray(this.state.clients);
         let client = clients.find(c => c._id === clientData._id);
         Object.keys(clientData).forEach(k => client[k] = clientData[k]);
         this.setState({ clients: clients }, alert(`${clientData.name} was updated successfully`));
@@ -59,7 +63,7 @@ class App extends Component {
      * Add newly created client to state (from API)
      */
     addClientToState = client => {
-        const clients = JSON.parse(JSON.stringify(this.state.clients));
+        const clients = deepCopyArray(this.state.clients);
         clients.push(client);
         this.setState({ clients: clients }, alert(`${client.name} was added successfully`));
     };
@@ -111,7 +115,9 @@ class App extends Component {
         return await apiUtils.getData(url);
     };
 
-    // Get clients on app load
+    /**
+    * Get clients on app load
+    */
     componentDidMount = async () => {
         const clients = await this.getClients();
         this.setState({

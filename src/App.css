@@ -49,6 +49,24 @@ button {
     font-family: var(--body-font);
 }
 
+input {
+    border: none;
+    font-family: var(--body-font);
+    font-size: 1rem;
+}
+
+input:focus {
+    outline: none;
+}
+
+select {
+    background-color: transparent;
+    border: none;
+    font-family: var(--body-font);
+    border-bottom: 1px solid var(--gray);
+    font-size: 1rem;
+}
+
 .main-container {
     margin: var(--main-margin);
 }
@@ -142,18 +160,6 @@ nav a:first-child {
     font-size: 1rem;
 }
 
-.client-form input,
-.actions-container input {
-    border: none;
-    font-family: var(--body-font);
-    font-size: 1rem;
-}
-
-.client-form input:focus,
-.actions-container input:focus {
-    outline: none;
-}
-
 .edit-container input {
     border-bottom: 1px solid white;
     background-color: var(--dark-bg);
@@ -208,14 +214,6 @@ nav a:first-child {
     font-weight: bold;
     font-size: 0.9rem;
     text-transform: uppercase;
-}
-
-.client-actions-container select {
-    background-color: transparent;
-    border: none;
-    font-family: var(--body-font);
-    border-bottom: 1px solid var(--gray);
-    font-size: 1rem;
 }
 
 /* Badges */
@@ -297,4 +295,24 @@ nav a:first-child {
 .chart-item p {
     font-weight: 600;
     font-size: 1.1rem;
+}
+
+/* Search */
+
+.search-container {
+    margin-bottom: 10px;
+}
+
+.search-container input {
+    border: none;
+    border-bottom: 1px solid var(--gray);
+}
+
+.search-container input,
+.search-container select {
+    margin-right: 10px;
+}
+
+.search-container span {
+    font-size: 0.8rem;
 }
