@@ -22,7 +22,11 @@ class App extends Component {
             isError: false,
             errorMessage: '',
             closeModal: false,
-            resetAddForm: false
+            resetAddForm: false,
+            firstResult: 0,
+            lastResult: 0,
+            totalItems: 0,
+            pageSize: 0
         };
     };
 
@@ -110,18 +114,65 @@ class App extends Component {
     /**
      * Get all/paged amount of clients from API
      */
-    getClients = async () => {
-        const url = `${apiUtils.SERVER_URL}${apiUtils.CLIENTS_API}`;
+    getClients = async index => {
+        const url = `${apiUtils.SERVER_URL}${apiUtils.CLIENTS_API}/${index}`;
         return await apiUtils.getData(url);
+    };
+
+    // Paginating methods
+    /**
+     * Paginate one page forward
+     */
+    pageForward = () => {
+        this.setState({ firstResult: this.state.lastResult + 1 });
+    };
+
+    /**
+     * Paginate one page backwards
+     */
+    pageBackwards = () => {
+        this.setState({ firstResult: this.state.firstResult - this.state.pageSize });
+    };
+
+    /**
+     * Paginate to the first page
+     */
+    pageToStart = () => {
+        this.setState({ firstResult: 0 });
+    };
+    /**
+     * Paginate to the last page
+     */
+    pageToEnd = () => {
+        this.setState({ firstResult: this.state.totalItems - this.state.totalItems % this.state.pageSize});
+    };
+
+    /**
+     * Get clients from specific page
+     */
+    componentDidUpdate = async (prevProps, prevState) => {
+        const { firstResult } = this.state;
+        if (prevState.firstResult !== firstResult) {
+            const clients = await this.getClients(firstResult);
+            this.setState({
+                clients: clients.data,
+                lastResult: clients.lastResult,
+                pageSize: clients.pageSize,
+                totalItems: clients.totalItems
+            });
+        }
     };
 
     /**
     * Get clients on app load
     */
     componentDidMount = async () => {
-        const clients = await this.getClients();
+        const clients = await this.getClients(0);
         this.setState({
-            clients: clients.filter((c, i) => i < 20) // only 20 until paging implemented
+            clients: clients.data,
+            lastResult: clients.lastResult,
+            pageSize: clients.pageSize,
+            totalItems: clients.totalItems
         });
     };
 
@@ -139,6 +190,13 @@ class App extends Component {
                             updateClient={this.updateClient}
                             closeModal={this.state.closeModal}
                             toggleModal={this.toggleModal}
+                            firstResult={this.state.firstResult}
+                            lastResult={this.state.lastResult}
+                            totalItems={this.state.totalItems}
+                            pageForward={this.pageForward}
+                            pageToStart={this.pageToStart}
+                            pageBackwards={this.pageBackwards}
+                            pageToEnd={this.pageToEnd}
                         />
                     } />
 

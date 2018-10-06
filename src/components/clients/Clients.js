@@ -5,6 +5,7 @@ import ClientsRow from './ClientsRow';
 import MyLoader from '../general/MyLoader';
 import EditClientModal from './EditClientModal';
 import Search from './Search';
+import Pager from './Pager';
 
 const ClientsHeader = () => {
     return (
@@ -83,11 +84,22 @@ class Clients extends Component {
                     >
                         <EditClientModal client={this.state.currentClient} updateClient={this.props.updateClient} />
                     </Modal>
-                    <Search
-                        searchTerm={this.state.searchTerm}
-                        selectFilter={this.state.selectFilter}
-                        setSearchTerm={this.setSearchTerm}
-                    />
+                    <div className='table-bar'>
+                        <Search
+                            searchTerm={this.state.searchTerm}
+                            selectFilter={this.state.selectFilter}
+                            setSearchTerm={this.setSearchTerm}
+                        />
+                        <Pager
+                            firstResult={this.props.firstResult}
+                            lastResult={this.props.lastResult}
+                            totalItems={this.props.totalItems}
+                            pageForward={this.props.pageForward}
+                            pageToStart={this.props.pageToStart}
+                            pageBackwards={this.props.pageBackwards}
+                            pageToEnd={this.props.pageToEnd}
+                        />
+                    </div>
                     <ClientsHeader />
                     {clientsList.map(c => <ClientsRow key={c._id} client={c} openEditDialog={this.openEditDialog} />)}
                 </div>
