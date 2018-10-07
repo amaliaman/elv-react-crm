@@ -5,7 +5,6 @@ const bodyParser = require('body-parser');
 const moment = require('moment');
 
 const clientsApi = require("./server/api/clients-api");
-const Client = require('./models/clientModel');
 
 const SERVER_PORT = process.env.PORT || 8080;
 const DB_URI = process.env.CONNECTION_STRING || 'mongodb://localhost/reactCRM';
@@ -40,13 +39,14 @@ app.listen(SERVER_PORT, () => { console.log(`${getTimestamp()} - Server started 
 function getTimestamp() { return moment().format("YYYY-MM-DD HH:mm:ss") };
 
 // ===== Uncomment only to initialize the DB from data.json =====
-// const initDB = () => {
-//   Client.deleteMany({}, () => {
-//     const data = require('./server/data.json');
-//     data.forEach(c => {
-//       const client = new Client(c);
-//       client.save();
-//     });
-//   });
-// };
-// initDB();
+/* const initDB = () => {
+  const Client = require('./models/clientModel');
+  Client.deleteMany({}, () => {
+    const data = require('./server/data.json');
+    data.forEach(c => {
+      const client = new Client(c);
+      client.save();
+    });
+  });
+};
+initDB(); */
