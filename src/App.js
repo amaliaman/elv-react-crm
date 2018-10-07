@@ -26,7 +26,8 @@ class App extends Component {
             firstResult: 0,
             lastResult: 0,
             totalItems: 0,
-            pageSize: 0
+            pageSize: 0,
+            names: []
         };
     };
 
@@ -44,8 +45,10 @@ class App extends Component {
     updateClientInState = clientData => {
         const clients = deepCopyArray(this.state.clients);
         let client = clients.find(c => c._id === clientData._id);
-        Object.keys(clientData).forEach(k => client[k] = clientData[k]);
-        this.setState({ clients: clients }, alert(`${clientData.name} was updated successfully`));
+        if (client) {
+            Object.keys(clientData).forEach(k => client[k] = clientData[k]);
+            this.setState({ clients: clients });
+        }
     };
 
     /**
@@ -55,21 +58,37 @@ class App extends Component {
         const url = `${apiUtils.SERVER_URL}${apiUtils.CLIENTS_API}/${clientData._id}`;
         const client = await apiUtils.putApi(url, clientData);
         if (client.status === 201) {
+            alert(`${client.data.name} was updated successfully`)
             this.setState({ closeModal: true });
             this.updateClientInState(client.data);
         }
         else {
             console.error(client.status, client.statusText);
         }
+        // Update this.state.names for selector
+        const options = deepCopyArray(this.state.names);
+        const option = options.find(o => o.value === clientData._id);
+        if (option.label !== clientData.name) {
+            option.label = clientData.name;
+        }
+        this.setState({ names: options });
     };
 
     /**
      * Add newly created client to state (from API)
      */
     addClientToState = client => {
-        const clients = deepCopyArray(this.state.clients);
-        clients.push(client);
-        this.setState({ clients: clients }, alert(`${client.name} was added successfully`));
+        // Only if on last page
+        const isLastPage = this.state.lastResult + 1 >= this.state.totalItems;
+        if (isLastPage) {
+            const clients = deepCopyArray(this.state.clients);
+            clients.push(client);
+            this.setState({ clients: clients });
+        }
+        // Add to names for selector + increase totalItems
+        const options = deepCopyArray(this.state.names);
+        options.push({ value: client._id, label: client.name });
+        this.setState({ names: options, totalItems: this.state.totalItems + 1 });
     };
 
     /**
@@ -79,6 +98,7 @@ class App extends Component {
         const url = `${apiUtils.SERVER_URL}${apiUtils.CLIENTS_API}`;
         const client = await apiUtils.postApi(url, clientData);
         if (client.status === 201) {
+            alert(`${client.data.name} was added successfully`)
             this.setState({ resetAddForm: true });
             this.addClientToState(client.data);
         }
@@ -140,11 +160,17 @@ class App extends Component {
     pageToStart = () => {
         this.setState({ firstResult: 0 });
     };
+
     /**
      * Paginate to the last page
      */
     pageToEnd = () => {
-        this.setState({ firstResult: this.state.totalItems - this.state.totalItems % this.state.pageSize});
+        const lastPage = this.state.totalItems % this.state.pageSize;
+        let firstResult = this.state.totalItems - this.state.pageSize;
+        if (lastPage > 0) {
+            firstResult = this.state.totalItems - this.state.totalItems % this.state.pageSize;
+        }
+        this.setState({ firstResult: firstResult });
     };
 
     /**
@@ -167,6 +193,7 @@ class App extends Component {
     * Get clients on app load
     */
     componentDidMount = async () => {
+        // Get current page's clients
         const clients = await this.getClients(0);
         this.setState({
             clients: clients.data,
@@ -174,6 +201,13 @@ class App extends Component {
             pageSize: clients.pageSize,
             totalItems: clients.totalItems
         });
+        // Get all client names for selector
+        const names = await this.getClientNames();
+        const options = [];
+        names.forEach(c => {
+            options.push({ value: c._id, label: c.name })
+        });
+        this.setState({ names: options });
     };
 
     render() {
@@ -207,7 +241,7 @@ class App extends Component {
                             addClient={this.addClient}
                             resetAddForm={this.state.resetAddForm}
                             toggleResetAddForm={this.toggleResetAddForm}
-                            getClientNames={this.getClientNames}
+                            names={this.state.names}
                             getClientDetails={this.getClientDetails}
                         />
                     } />

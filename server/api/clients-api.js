@@ -51,7 +51,6 @@ router.get('/owners', (req, res) => {
 router.get('/clientnames', (req, res) => {
     Client
         .find()
-        .limit(50) // for demo
         .select('name')
         .then(clientNames => res.json(clientNames))
         .catch(err => { throw err });

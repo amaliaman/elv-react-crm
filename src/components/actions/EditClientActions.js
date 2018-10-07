@@ -23,7 +23,9 @@ export class EditClientActions extends Component {
     return (
       <div>
         <h4>Update</h4>
-        <ClientSelector getClientNames={this.props.getClientNames} setClientId={this.setClientId} />
+        <ClientSelector
+          names={this.props.names}
+          setClientId={this.setClientId} />
         {this.state.clientId &&
           <ClientActions
             updateClient={this.props.updateClient}
